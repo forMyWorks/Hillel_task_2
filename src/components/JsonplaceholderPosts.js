@@ -1,5 +1,6 @@
 import { Component } from "react";
 import { NotificationManager } from "react-notifications";
+import  {Pagination} from 'antd';
 
 import Article from "./Article.js";
 import ModalWindow from "./ModalWindow.js";
@@ -13,6 +14,9 @@ class JsonplaceholderPosts extends Component {
     title: "",
     id: null,
     body: null,
+    firstArticle:0,
+    lastArticle: 10
+
   };
 
   endpoint = "https://jsonplaceholder.typicode.com/posts/";
@@ -51,7 +55,9 @@ class JsonplaceholderPosts extends Component {
     this.setState(() => ({ hidden: false, title }));
   };
   closeModalWindow = () => {
-    this.setState(() => ({ hidden: true }));
+    if (this.state.title) {
+      this.setState(() => ({ hidden: true }));
+    }
   };
 
   findIdAndBody = (id, body) => {
@@ -77,7 +83,7 @@ class JsonplaceholderPosts extends Component {
         2000
       );
     });
-    if (response.ok) {
+    if (response.ok && this.state.title) {
       const arrNewTitle = this.state.items.map((item) => {
         if (id === item.id) {
           item.title = this.state.title;
@@ -87,14 +93,28 @@ class JsonplaceholderPosts extends Component {
       this.setState(() => ({ items: arrNewTitle }));
       NotificationManager.success("successfully", "Edited!", 2000);
     }
+    if (!this.state.title) {
+      return NotificationManager.warning(
+        "Fill in the field or delete the entire article",
+        "Warning!",
+        5000
+      );
+    }
   };
 
   changeInputTitle = (event) => {
     this.setState(() => ({ title: event.target.value }));
+    if (!event.target.value) {
+      return NotificationManager.warning(
+        "This field cannot be empty",
+        "Warning!",
+        5000
+      );
+    }
   };
 
   render() {
-    const { error, items, isLoaded, hidden, id, title } = this.state;
+    const { error, items, isLoaded, hidden, id, title,firstArticle, lastArticle } = this.state;
 
     const allPosts = items.map((item, index) => {
       return (
@@ -120,6 +140,7 @@ class JsonplaceholderPosts extends Component {
       />
     );
 
+
     if (error) {
       return <p> Error {error.message}</p>;
     } else if (!isLoaded) {
@@ -128,7 +149,18 @@ class JsonplaceholderPosts extends Component {
       return (
         <>
           {popup}
-          {allPosts}
+          {allPosts.slice(firstArticle,lastArticle)}
+
+          <Pagination showSizeChanger={false} 
+          onChange={(page,pageSize)=>{
+            this.setState(()=>({
+              firstArticle: (page-1)*pageSize,
+              lastArticle: page*pageSize
+            }))
+          }} total={items.length} />
+
+          
+          
         </>
       );
     }
@@ -136,3 +168,5 @@ class JsonplaceholderPosts extends Component {
 }
 
 export default JsonplaceholderPosts;
+
+
