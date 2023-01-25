@@ -1,6 +1,6 @@
 import { Component } from "react";
 import { NotificationManager } from "react-notifications";
-import  {Pagination} from 'antd';
+import { Pagination } from "antd";
 
 import Article from "./Article.js";
 import ModalWindow from "./ModalWindow.js";
@@ -14,9 +14,8 @@ class JsonplaceholderPosts extends Component {
     title: "",
     id: null,
     body: null,
-    firstArticle:0,
-    lastArticle: 10
-
+    firstArticle: 0,
+    lastArticle: 10,
   };
 
   endpoint = "https://jsonplaceholder.typicode.com/posts/";
@@ -114,7 +113,16 @@ class JsonplaceholderPosts extends Component {
   };
 
   render() {
-    const { error, items, isLoaded, hidden, id, title,firstArticle, lastArticle } = this.state;
+    const {
+      error,
+      items,
+      isLoaded,
+      hidden,
+      id,
+      title,
+      firstArticle,
+      lastArticle,
+    } = this.state;
 
     const allPosts = items.map((item, index) => {
       return (
@@ -140,7 +148,6 @@ class JsonplaceholderPosts extends Component {
       />
     );
 
-
     if (error) {
       return <p> Error {error.message}</p>;
     } else if (!isLoaded) {
@@ -149,18 +156,18 @@ class JsonplaceholderPosts extends Component {
       return (
         <>
           {popup}
-          {allPosts.slice(firstArticle,lastArticle)}
+          {allPosts.slice(firstArticle, lastArticle)}
 
-          <Pagination showSizeChanger={false} 
-          onChange={(page,pageSize)=>{
-            this.setState(()=>({
-              firstArticle: (page-1)*pageSize,
-              lastArticle: page*pageSize
-            }))
-          }} total={items.length} />
-
-          
-          
+          <Pagination
+            showSizeChanger={false}
+            onChange={(page, pageSize) => {
+              this.setState(() => ({
+                firstArticle: (page - 1) * pageSize,
+                lastArticle: page * pageSize,
+              }));
+            }}
+            total={items.length}
+          />
         </>
       );
     }
@@ -168,5 +175,3 @@ class JsonplaceholderPosts extends Component {
 }
 
 export default JsonplaceholderPosts;
-
-
