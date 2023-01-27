@@ -1,6 +1,7 @@
 import { Component } from "react";
 import { NotificationManager } from "react-notifications";
 import { Pagination } from "antd";
+import { v4 as uuidv4 } from "uuid";
 
 import Article from "./Article.js";
 import ModalWindow from "./ModalWindow.js";
@@ -19,6 +20,9 @@ class JsonplaceholderPosts extends Component {
   };
 
   endpoint = "https://jsonplaceholder.typicode.com/posts/";
+  notificaWarning = () => {
+    NotificationManager.warning("This field cannot be empty", "Warning!", 5000);
+  };
 
   componentDidMount() {
     fetch(this.endpoint)
@@ -56,6 +60,8 @@ class JsonplaceholderPosts extends Component {
   closeModalWindow = () => {
     if (this.state.title) {
       this.setState(() => ({ hidden: true }));
+    } else {
+      return this.notificaWarning();
     }
   };
 
@@ -64,55 +70,48 @@ class JsonplaceholderPosts extends Component {
   };
 
   changeTitleJsonplaceholder = async (id) => {
-    let response = await fetch(this.endpoint + id, {
-      method: "PUT",
-      body: JSON.stringify({
-        id,
-        title: this.state.title,
-        body: this.state.body,
-        userId: id,
-      }),
-      headers: {
-        "Content-type": "application/json; charset=UTF-8",
-      },
-    }).catch(() => {
-      NotificationManager.error(
-        "Does not have access to the server",
-        "Error :(",
-        2000
-      );
-    });
-    if (response.ok && this.state.title) {
-      const arrNewTitle = this.state.items.map((item) => {
-        if (id === item.id) {
-          item.title = this.state.title;
-        }
-        return item;
+    if (this.state.title) {
+      let response = await fetch(this.endpoint + id, {
+        method: "PUT",
+        body: JSON.stringify({
+          id,
+          title: this.state.title,
+          body: this.state.body,
+          userId: id,
+        }),
+        headers: {
+          "Content-type": "application/json; charset=UTF-8",
+        },
+      }).catch(() => {
+        NotificationManager.error(
+          "Does not have access to the server",
+          "Error :(",
+          2000
+        );
       });
-      this.setState(() => ({ items: arrNewTitle }));
-      NotificationManager.success("successfully", "Edited!", 2000);
-    }
-    if (!this.state.title) {
-      return NotificationManager.warning(
-        "Fill in the field or delete the entire article",
-        "Warning!",
-        5000
-      );
+      // if (response.ok && this.state.title) {
+      if (response.ok) {
+        const arrNewTitle = this.state.items.map((item) => {
+          if (id === item.id) {
+            item.title = this.state.title;
+          }
+          return item;
+        });
+        this.setState(() => ({ items: arrNewTitle }));
+        NotificationManager.success("successfully", "Edited!", 2000);
+      }
     }
   };
 
   changeInputTitle = (event) => {
     this.setState(() => ({ title: event.target.value }));
     if (!event.target.value) {
-      return NotificationManager.warning(
-        "This field cannot be empty",
-        "Warning!",
-        5000
-      );
+      return this.notificaWarning();
     }
   };
 
   render() {
+    console.log("render");
     const {
       error,
       items,
@@ -124,10 +123,10 @@ class JsonplaceholderPosts extends Component {
       lastArticle,
     } = this.state;
 
-    const allPosts = items.map((item, index) => {
+    const allPosts = items.map((item) => {
       return (
         <Article
-          key={index}
+          key={uuidv4()}
           id={item.id}
           title={item.title}
           body={item.body}
@@ -147,7 +146,18 @@ class JsonplaceholderPosts extends Component {
         id={id}
       />
     );
-
+    const pagination = (
+      <Pagination
+        showSizeChanger={false}
+        onChange={(page, pageSize) => {
+          this.setState(() => ({
+            firstArticle: (page - 1) * pageSize,
+            lastArticle: page * pageSize,
+          }));
+        }}
+        total={items.length}
+      />
+    );
     if (error) {
       return <p> Error {error.message}</p>;
     } else if (!isLoaded) {
@@ -157,17 +167,7 @@ class JsonplaceholderPosts extends Component {
         <>
           {popup}
           {allPosts.slice(firstArticle, lastArticle)}
-
-          <Pagination
-            showSizeChanger={false}
-            onChange={(page, pageSize) => {
-              this.setState(() => ({
-                firstArticle: (page - 1) * pageSize,
-                lastArticle: page * pageSize,
-              }));
-            }}
-            total={items.length}
-          />
+          {pagination}
         </>
       );
     }

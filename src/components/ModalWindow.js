@@ -7,7 +7,7 @@ class ModalWindow extends Component {
         <div
           hidden={this.props.hidden}
           className="popup-black"
-          onClick={(event) => {
+          onMouseUp={(event) => {
             if (event.target.className === "popup-black") {
               this.props.closeModalWindow();
             }

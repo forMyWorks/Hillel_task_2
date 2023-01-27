@@ -1,10 +1,12 @@
 import { Component } from "react";
 
 class Article extends Component {
+  state = { disabled: false };
+
   render() {
     return (
       <>
-        <div className="wrap-article">
+        <div key={this.props.key} className="wrap-article">
           <div
             className="wrap-article_title"
             onClick={() => {
@@ -18,8 +20,12 @@ class Article extends Component {
 
           <button
             className="wrap-article_btn"
-            onClick={(event) => {
-              this.props.deletingArticle(this.props.id);
+            disabled={this.state.disabled}
+            onClick={() => {
+              if (!this.state.disabled) {
+                this.props.deletingArticle(this.props.id);
+                this.setState({ disabled: true });
+              }
             }}
           >
             Delete the article
