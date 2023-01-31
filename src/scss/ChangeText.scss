@@ -197,9 +197,9 @@ body {
 }
 
 :where(.css-dev-only-do-not-override-1n7nwfa).ant-pagination {
-  margin-top: 1rem;
-  text-align: center;
-  font-size: 0.9rem;
+  margin-top: 1rem !important;
+  text-align: center !important;
+  font-size: 0.9rem !important;
 }
 :where(.css-dev-only-do-not-override-1n7nwfa).ant-pagination
   .ant-pagination-item-active
@@ -211,7 +211,7 @@ body {
 }
 :where(.css-dev-only-do-not-override-1n7nwfa).ant-pagination
   .ant-pagination-item-active {
-  font-weight: 600;
-  background-color: #ffffff;
-  border-color: rgb(141, 68, 183);
+  font-weight: 600 !important;
+  background-color: #ffffff !important;
+  border-color: rgb(141, 68, 183) !important;
 }

@@ -1,7 +1,6 @@
 import { Component } from "react";
 import { NotificationManager } from "react-notifications";
 import { Pagination } from "antd";
-import { v4 as uuidv4 } from "uuid";
 
 import Article from "./Article.js";
 import ModalWindow from "./ModalWindow.js";
@@ -89,7 +88,6 @@ class JsonplaceholderPosts extends Component {
           2000
         );
       });
-      // if (response.ok && this.state.title) {
       if (response.ok) {
         const arrNewTitle = this.state.items.map((item) => {
           if (id === item.id) {
@@ -111,7 +109,6 @@ class JsonplaceholderPosts extends Component {
   };
 
   render() {
-    console.log("render");
     const {
       error,
       items,
@@ -123,10 +120,10 @@ class JsonplaceholderPosts extends Component {
       lastArticle,
     } = this.state;
 
-    const allPosts = items.map((item) => {
+    const allPosts = items.map((item, index) => {
       return (
         <Article
-          key={uuidv4()}
+          key={index}
           id={item.id}
           title={item.title}
           body={item.body}
@@ -166,7 +163,7 @@ class JsonplaceholderPosts extends Component {
       return (
         <>
           {popup}
-          {allPosts.slice(firstArticle, lastArticle)}
+          <div>{allPosts.slice(firstArticle, lastArticle)}</div>
           {pagination}
         </>
       );

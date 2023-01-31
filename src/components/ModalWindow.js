@@ -1,40 +1,52 @@
-import { Component } from "react";
+import { useEffect, useRef } from "react";
 
-class ModalWindow extends Component {
-  render() {
-    return (
-      <>
-        <div
-          hidden={this.props.hidden}
-          className="popup-black"
-          onMouseUp={(event) => {
-            if (event.target.className === "popup-black") {
-              this.props.closeModalWindow();
-            }
-          }}
-        >
-          <div className="popup">
+function ModalWindow(props) {
+  const ref = useRef();
+
+  function useOnClickOutside(ref, handler) {
+    useEffect(() => {
+      const listener = (event) => {
+        if (!ref.current || ref.current.contains(event.target)) {
+          return;
+        }
+        handler(event);
+      };
+      document.addEventListener("mousedown", listener);
+      document.addEventListener("touchstart", listener);
+      return () => {
+        document.removeEventListener("mousedown", listener);
+        document.removeEventListener("touchstart", listener);
+      };
+    }, [ref, handler]);
+  }
+
+  useOnClickOutside(ref, () => props.closeModalWindow());
+
+  return (
+    <div>
+      {!props.hidden ? (
+        <div className="popup-black">
+          <div className="popup" ref={ref}>
             <input
               className="popup-info"
-              value={this.props.title}
+              value={props.title}
               onChange={(event) => {
-                this.props.changeInputTitle(event);
+                props.changeInputTitle(event);
               }}
             />
             <button
               className="wrap-article_btn popup-close"
               onClick={() => {
-                this.props.changeTitleJsonplaceholder(this.props.id);
-                this.props.closeModalWindow();
+                props.changeTitleJsonplaceholder(props.id);
+                props.closeModalWindow();
               }}
             >
               Save
             </button>
           </div>
         </div>
-      </>
-    );
-  }
+      ) : null}
+    </div>
+  );
 }
-
 export default ModalWindow;
